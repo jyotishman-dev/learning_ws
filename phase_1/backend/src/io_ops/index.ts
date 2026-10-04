@@ -18,6 +18,18 @@ export function socketHandler(io: Server) {
     })
 
 
+   socket.emit('welcome', {message : "Welcome to the server chad!!!"})
+
+    socket.on('welcome:mess', (m)=>{
+        console.log(m)
+    })
+
+
+
+    socket.on('hello',(data)=>{
+        console.log(`user joined  ${data.name}`)
+        socket.broadcast.emit('user-joined', data)
+    })
 
   });
 }
