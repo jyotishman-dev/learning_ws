@@ -1,14 +1,15 @@
-
-import http from 'http'
-import app from './src/app'
-import { Server } from 'socket.io'
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
 import cors from "cors";
+import { registerLobbyNamespace } from "./src/lobby/ws";
+import { authMiddleware } from "./src/middlewares/auth";
 
+
+const app = express();
+app.use(cors());
 
 const server = http.createServer(app);
-app.use(cors())
-
-
 
 const io = new Server(server, {
   cors: {
@@ -17,8 +18,15 @@ const io = new Server(server, {
   },
 });
 
+// ═══ Task 11: auth middleware — har namespace pe apply ═══
+io.use(authMiddleware);
 
+// ═══ Task 10: namespaces ═══
+const lobbyNs = io.of("/lobby");
+registerLobbyNamespace(lobbyNs);
 
-server.listen(3001, ()=>{
-    console.log(`app runs on port 3001`)
-})
+lobbyNs.use(authMiddleware)
+
+server.listen(3001, () => {
+  console.log("Server listening on 3001");
+});
